@@ -1,0 +1,5 @@
+---
+# vars file for proxy
+proxy_pkg: nginx
+proxy_service: nginx
+conf_file: /etc/nginx/conf.d/custom.conf

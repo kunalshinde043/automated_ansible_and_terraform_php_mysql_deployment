@@ -1,0 +1,26 @@
+# Proxy / Bastion Server
+[proxyserver]
+${proxy_public_ip} ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/global_key_v2.pem
+
+
+# Application Server
+[appserver]
+${app_private_ip} ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/global_key_v2.pem 
+
+# Database Server
+[dbserver]
+${db_private_ip} ansible_user=ec2-user ansible_ssh_private_key_file=/home/ec2-user/global_key_v2.pem ansible_python_interpreter=/usr/bin/python3
+
+# Grouping private servers
+[private:children]
+appserver
+dbserver
+
+# SSH through Proxy (Bastion)
+[private:vars]
+ansible_ssh_common_args=-o ProxyCommand="ssh -i /home/ec2-user/global_key_v2.pem -W %h:%p ec2-user@${proxy_public_ip}"
+
+# All global 
+[all:vars]
+public_ip=${app_private_ip}
+db_server_public_ip=${db_private_ip}

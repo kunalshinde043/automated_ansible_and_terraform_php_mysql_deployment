@@ -1,0 +1,31 @@
+---
+# tasks file for proxy
+
+- name: install nginx
+  ansible.builtin.dnf:
+    name: "{{ proxy_pkg }}"
+    state: present
+
+- name: add config block
+  ansible.builtin.blockinfile:
+    path: "{{ conf_file }}"
+    create: yes
+    block: |
+      server {
+        listen 81;
+
+        location / {
+          proxy_pass http://{{public_ip}};
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+      }
+  notify: restart nginx
+
+- name: start and enable nginx
+  ansible.builtin.systemd_service:
+    name: "{{ proxy_service }}"
+    state: started
+    enabled: true
+

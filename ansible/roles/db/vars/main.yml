@@ -1,0 +1,7 @@
+---
+# vars file for db
+db_pkg: mariadb105-server
+db_service: mariadb
+db_name: FCT
+db_user: appuser
+db_password: app123

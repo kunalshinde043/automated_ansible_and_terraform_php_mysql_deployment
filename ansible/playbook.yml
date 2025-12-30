@@ -1,0 +1,19 @@
+---
+- name: Proxy Tier
+  hosts: proxyserver
+  become: yes
+  roles:
+    - proxy
+
+- name: Application Tier
+  hosts: appserver
+  become: yes
+  roles:
+    - app
+
+- name: Database Tier
+  hosts: dbserver
+  become: yes
+  roles:
+    - db
+

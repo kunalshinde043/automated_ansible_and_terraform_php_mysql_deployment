@@ -1,0 +1,7 @@
+---
+# handlers file for proxy
+- name: restart nginx
+  ansible.builtin.systemd_service:
+      name: "{{proxy_service}}"
+      state: restarted
+

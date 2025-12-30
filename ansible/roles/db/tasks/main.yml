@@ -1,0 +1,46 @@
+---
+# tasks file for db
+- name: install mariadb
+  ansible.builtin.dnf:
+      name: "{{ db_pkg }}"
+      state: present
+
+- name: start and enable mariadb
+  ansible.builtin.systemd_service:
+      name: "{{ db_service }}"
+      state: started
+      enabled: true
+
+- name: install python3 and pip
+  ansible.builtin.dnf:
+      name:
+        - python3
+        - python3-pip
+      state: present
+
+- name: install PyMySQL via pip
+  ansible.builtin.pip:
+      name: PyMySQL
+      executable: pip3
+
+- name: allow remote DB connections
+  ansible.builtin.lineinfile:
+      path: /etc/my.cnf.d/mariadb-server.cnf
+      regexp: '^bind-address'
+      line: 'bind-address=0.0.0.0'
+  notify: restart mariadb
+
+- name: create database
+  community.mysql.mysql_db:
+      name: "{{ db_name }}"
+      state: present
+      login_unix_socket: /var/lib/mysql/mysql.sock
+
+- name: create database user
+  community.mysql.mysql_user:
+      name: "{{ db_user }}"
+      password: "{{ db_password }}"
+      host: "%"
+      priv: "{{ db_name }}.*:ALL"
+      state: present
+      login_unix_socket: /var/lib/mysql/mysql.sock

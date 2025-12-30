@@ -1,0 +1,11 @@
+---
+# vars file for app
+packages:
+  - nginx
+  - php
+  - php-fpm
+  - php-mysqlnd
+services:
+  - nginx
+  - php-fpm
+web_file_path: /usr/share/nginx/html/index.php
