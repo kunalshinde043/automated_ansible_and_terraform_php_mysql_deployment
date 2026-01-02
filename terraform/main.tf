@@ -203,51 +203,13 @@ data "template_file" "ansible_inventory" {
 
 resource "local_file" "create_inventory" {
   content  = data.template_file.ansible_inventory.rendered
-  filename = "${path.module}/../ansible/inventory.ini"
-}
-
-resource "null_resource" "scan_proxy_hostkey" {
-
-  provisioner "local-exec" {
-    command = "ssh-keyscan -H ${aws_instance.public-server.public_ip} >> ~/.ssh/known_hosts"
-  }
-
-  depends_on = [
-    aws_instance.public-server
-  ]
-}
-
-resource "null_resource" "scan_app_hostkey" {
-
-  provisioner "local-exec" {
-    command = "ssh -o StrictHostKeyChecking=no -i /home/ec2-user/global_key_v2.pem -J ec2-user@${aws_instance.public-server.public_ip} ec2-user@${aws_instance.private-server-1.private_ip} exit"
-  }
-
-  depends_on = [
-    aws_instance.public-server,
-    aws_instance.private-server-1
-  ]
-}
-
-resource "null_resource" "scan_db_hostkey" {
-
-  provisioner "local-exec" {
-    command = "ssh -o StrictHostKeyChecking=no -i /home/ec2-user/global_key_v2.pem -J ec2-user@${aws_instance.public-server.public_ip} ec2-user@${aws_instance.private-server-2.private_ip} exit"
-  }
-
-  depends_on = [
-    aws_instance.public-server,
-    aws_instance.private-server-2
-  ]
+  filename = "${path.module}/../ansible/inventory.ini"      
 }
 
 resource "null_resource" "run_ansible" {
 
   depends_on = [
-    local_file.create_inventory,
-    null_resource.scan_proxy_hostkey,
-    null_resource.scan_app_hostkey,
-    null_resource.scan_db_hostkey
+    local_file.create_inventory
   ]
 
   provisioner "local-exec" {
