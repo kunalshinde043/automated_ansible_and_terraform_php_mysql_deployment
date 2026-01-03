@@ -225,10 +225,12 @@ resource "local_file" "create_inventory" {
 
 resource "null_resource" "run_ansible" {
   depends_on = [
-    local_file.create_inventory
+    local_file.create_inventory,
+    aws_instance.public-server,
+    aws_security_group.three-tier-sg
   ]
 
   provisioner "local-exec" {
-    command = "cd ../ansible && ansible-playbook -i inventory.ini playbook.yml"
+    command = "sleep 30 && export ANSIBLE_HOST_KEY_CHECKING=False && cd ../ansible && ansible-playbook -i inventory.ini playbook.yml"
   }
 }
